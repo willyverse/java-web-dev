@@ -11,10 +11,7 @@ String[] selected = {"", "", "", ""};
 //값이 있을 때만 꺼낸다.
 if (request.getParameter("v1") != null) {
 	v1 = request.getParameter("v1");
-	if (request.getParameter("v2") != null && request.getParameter("v2") != "")
-		v2 = request.getParameter("v2");
-	else
-		v2 = "0";
+	v2 = request.getParameter("v2");
 	String op = request.getParameter("op");
 	
 	result = calculate(

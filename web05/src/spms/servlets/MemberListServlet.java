@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import spms.vo.Member;
 
-// 예외 발생 시 Error.jsp로 포워딩 
+// UI 출력 코드를 제거하고, UI 생성 및 출력을 JSP에게 위임한다.
 @WebServlet("/member/list")
 public class MemberListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -42,7 +42,7 @@ public class MemberListServlet extends HttpServlet {
 					"SELECT MNO,MNAME,EMAIL,CRE_DATE" + 
 					" FROM MEMBERS" +
 					" ORDER BY MNO ASC");
-			
+						
 			response.setContentType("text/html; charset=UTF-8");
 			ArrayList<Member> members = new ArrayList<Member>();
 			
@@ -65,9 +65,7 @@ public class MemberListServlet extends HttpServlet {
 			rd.include(request, response);
 			
 		} catch (Exception e) {
-			request.setAttribute("error", e);
-			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
-			rd.forward(request, response);
+			throw new ServletException(e);
 			
 		} finally {
 			try {if (rs != null) rs.close();} catch(Exception e) {}
