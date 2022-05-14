@@ -3,7 +3,6 @@ package spms.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+// ServletContext에 보관된 Connection 객체 사용 
 @SuppressWarnings("serial")
 @WebServlet("/member/update")
 public class MemberUpdateServlet extends HttpServlet {
@@ -27,11 +27,7 @@ public class MemberUpdateServlet extends HttpServlet {
 		ResultSet rs = null;
 		try {
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-						sc.getInitParameter("url"),
-						sc.getInitParameter("username"),
-						sc.getInitParameter("password")); 
+			conn = (Connection) sc.getAttribute("conn");   
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(
 				"SELECT MNO,EMAIL,MNAME,CRE_DATE FROM MEMBERS" + 
@@ -65,7 +61,7 @@ public class MemberUpdateServlet extends HttpServlet {
 		} finally {
 			try {if (rs != null) rs.close();} catch(Exception e) {}
 			try {if (stmt != null) stmt.close();} catch(Exception e) {}
-			try {if (conn != null) conn.close();} catch(Exception e) {}
+			//try {if (conn != null) conn.close();} catch(Exception e) {}
 		}
 	}
 	
@@ -73,18 +69,11 @@ public class MemberUpdateServlet extends HttpServlet {
 	protected void doPost(
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// CharacterEncodingFilter에서 처리
-		//request.setCharacterEncoding("UTF-8");
-		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-						sc.getInitParameter("url"),
-						sc.getInitParameter("username"),
-						sc.getInitParameter("password")); 
+			conn = (Connection) sc.getAttribute("conn");    
 			stmt = conn.prepareStatement(
 					"UPDATE MEMBERS SET EMAIL=?,MNAME=?,MOD_DATE=now()"
 					+ " WHERE MNO=?");
@@ -100,7 +89,7 @@ public class MemberUpdateServlet extends HttpServlet {
 			
 		} finally {
 			try {if (stmt != null) stmt.close();} catch(Exception e) {}
-			try {if (conn != null) conn.close();} catch(Exception e) {}
+			//try {if (conn != null) conn.close();} catch(Exception e) {}
 		}
 	}
 }

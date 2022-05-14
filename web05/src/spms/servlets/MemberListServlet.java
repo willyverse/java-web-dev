@@ -2,7 +2,6 @@ package spms.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import spms.vo.Member;
 
-// UI 출력 코드를 제거하고, UI 생성 및 출력을 JSP에게 위임한다.
+// ServletContext에 보관된 Connection 객체 사용  
 @WebServlet("/member/list")
 public class MemberListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -32,17 +31,13 @@ public class MemberListServlet extends HttpServlet {
 
 		try {
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-						sc.getInitParameter("url"),
-						sc.getInitParameter("username"),
-						sc.getInitParameter("password")); 
+			conn = (Connection) sc.getAttribute("conn");
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(
 					"SELECT MNO,MNAME,EMAIL,CRE_DATE" + 
 					" FROM MEMBERS" +
 					" ORDER BY MNO ASC");
-						
+			
 			response.setContentType("text/html; charset=UTF-8");
 			ArrayList<Member> members = new ArrayList<Member>();
 			
@@ -55,7 +50,7 @@ public class MemberListServlet extends HttpServlet {
 							.setEmail(rs.getString("EMAIL"))
 							.setCreatedDate(rs.getDate("CRE_DATE"))	);
 			}
-			
+						
 			// request에 회원 목록 데이터 보관한다.
 			request.setAttribute("members", members);
 			
@@ -65,12 +60,15 @@ public class MemberListServlet extends HttpServlet {
 			rd.include(request, response);
 			
 		} catch (Exception e) {
-			throw new ServletException(e);
+			e.printStackTrace();
+			request.setAttribute("error", e);
+			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
+			rd.forward(request, response);
 			
 		} finally {
 			try {if (rs != null) rs.close();} catch(Exception e) {}
 			try {if (stmt != null) stmt.close();} catch(Exception e) {}
-			try {if (conn != null) conn.close();} catch(Exception e) {}
+			//try {if (conn != null) conn.close();} catch(Exception e) {}
 		}
 
 	}

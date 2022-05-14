@@ -3,7 +3,6 @@ package spms.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
 import javax.servlet.ServletContext;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+// ServletContext에 보관된 Connection 객체 사용  
 @WebServlet("/member/add")
 public class MemberAddServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -39,19 +39,12 @@ public class MemberAddServlet extends HttpServlet {
 	protected void doPost(
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// CharacterEncodingFilter에서 처리
-		//request.setCharacterEncoding("UTF-8");
-		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 
 		try {
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-						sc.getInitParameter("url"),
-						sc.getInitParameter("username"),
-						sc.getInitParameter("password")); 
+			conn = (Connection) sc.getAttribute("conn");  
 			stmt = conn.prepareStatement(
 					"INSERT INTO MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
 					+ " VALUES (?,?,?,NOW(),NOW())");
@@ -67,8 +60,7 @@ public class MemberAddServlet extends HttpServlet {
 			
 		} finally {
 			try {if (stmt != null) stmt.close();} catch(Exception e) {}
-			try {if (conn != null) conn.close();} catch(Exception e) {}
+			//try {if (conn != null) conn.close();} catch(Exception e) {}
 		}
-
 	}
 }
