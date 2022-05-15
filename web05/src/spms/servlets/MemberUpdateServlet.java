@@ -44,7 +44,7 @@ public class MemberUpdateServlet extends HttpServlet {
 						.setCreatedDate(rs.getDate("CRE_DATE"));
 				request.setAttribute("member", member);
 			} else {
-				throw new Exception("해당 번호의 회원을 찾을 수 없습니다.");
+				throw new Exception("해당 번호의 회원이 존재하지 않습니당");
 			}
 			
 			response.setContentType("text/html; charset=UTF-8");
