@@ -1,7 +1,6 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -20,34 +19,29 @@ public class MemberAddServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected void doGet(
-			HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html; charset=UTF-8");
-		RequestDispatcher rd = request.getRequestDispatcher(
-				"/member/MemberForm.jsp");
+		RequestDispatcher rd = request
+				.getRequestDispatcher("/member/MemberForm.jsp");
 		rd.include(request, response);
 	}
-	
+
 	@Override
-	protected void doPost(
-			HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 
 		try {
 			ServletContext sc = this.getServletContext();
-			Connection conn = (Connection) sc.getAttribute("conn");
-			
-			MemberDao memberDao = new MemberDao();
-			memberDao.setConnection(conn);
-			
+			MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
+
 			memberDao.insert(new Member()
-						.setEmail(request.getParameter("email"))
-						.setName(request.getParameter("name"))
-						.setPassword(request.getParameter("password")));
-			
+					.setEmail(request.getParameter("email"))
+					.setName(request.getParameter("name"))
+					.setPassword(request.getParameter("password")));
+
 			response.sendRedirect("list");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("error", e);
