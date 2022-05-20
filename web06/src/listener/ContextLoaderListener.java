@@ -7,7 +7,13 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
 
-import spms.dao.MemberDao;
+import spms.dao.MySqlMemberDao;
+import controls.LogInController;
+import controls.LogOutController;
+import controls.MemberAddController;
+import controls.MemberDeleteController;
+import controls.MemberListController;
+import controls.MemberUpdateController;
 
 @WebListener
 public class ContextLoaderListener implements ServletContextListener {
@@ -21,10 +27,16 @@ public class ContextLoaderListener implements ServletContextListener {
 			DataSource ds = (DataSource) initialContext.lookup(
 					"java:comp/env/jdbc/studydb");
 			
-			MemberDao memberDao = new MemberDao();
+			MySqlMemberDao memberDao = new MySqlMemberDao();
 			memberDao.setDataSource(ds);
 			
-			sc.setAttribute("memberDao", memberDao);
+			sc.setAttribute("/auth/login.do", new LogInController().setMemberDao(memberDao));
+			sc.setAttribute("/auth/logout.do", new LogOutController());
+			sc.setAttribute("/member/list.do", new MemberListController().setMemberDao(memberDao));
+			sc.setAttribute("/member/add.do", new MemberAddController().setMemberDao(memberDao));
+			sc.setAttribute("/member/update.do", new MemberUpdateController().setMemberDao(memberDao));
+			sc.setAttribute("/member/delete.do", new MemberDeleteController().setMemberDao(memberDao));
+
 			
 		} catch (Throwable e) {
 			e.printStackTrace();
