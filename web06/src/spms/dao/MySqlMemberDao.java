@@ -72,7 +72,6 @@ public class MySqlMemberDao implements MemberDao {
 		try {
 			conn = ds.getConnection();
 			stmt = conn.createStatement();
-
 			return stmt.executeUpdate("DELETE FROM MEMBERS WHERE MNO=" + no);
 		} catch (Exception e) {
 			throw e;

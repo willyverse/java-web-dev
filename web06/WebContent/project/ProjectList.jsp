@@ -26,7 +26,10 @@
 			<td><a href="update.do?no=${project.no }">${project.title }</a></td>
 			<td>${project.startDate }</td>
 			<td>${project.endDate }</td>
-			<td>${project.state }</td>
+			<td>${project.state==0 ? "준비" : (
+					project.state==1 ? "진행" : ( 
+						project.state==2 ? "완료" : ( 
+							project.state==3 ? "취소" : "")))}</td>
 			<td><a href="delete.do?no=${project.no }">[삭제]</a></td>
 		</tr>
 	</c:forEach>
